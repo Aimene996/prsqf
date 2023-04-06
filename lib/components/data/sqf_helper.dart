@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 import 'package:path/path.dart' as p;
+import 'package:prsqf/components/model/note_model.dart';
 import 'package:sqflite/sqflite.dart';
 
 class SQLHelper {
@@ -64,7 +65,7 @@ CREATE TABLE todos (
   //////////////////////////////////////////////////////
   /////////////// INSERT DATA INTO DATABASE ///////////
 //////////////////////////////////////////////////////
-  static Future insertNote(Note note) async {
+  static Future insertNote(NoteModel note) async {
     Database db = await getDatabase;
     Batch batch = db.batch();
     batch.insert('notes', note.toMap(),
@@ -96,7 +97,7 @@ CREATE TABLE todos (
     Database db = await getDatabase;
     List<Map> maps = await db.query('notes');
     return List.generate(maps.length, (i) {
-      return Note(
+      return NoteModel(
         id: maps[i]['id'],
         title: maps[i]['title'],
         content: maps[i]['content'],
@@ -121,13 +122,13 @@ CREATE TABLE todos (
   /////////////// UPDATE DATA IN DATABASE /////////////
 //////////////////////////////////////////////////////
 
-  static Future updateNote(Note newNote) async {
+  static Future updateNote(NoteModel newNote) async {
     Database db = await getDatabase;
     await db.update('notes', newNote.toMap(),
         where: 'id=?', whereArgs: [newNote.id]);
   }
 
-  static Future updateNoteRaw(Note newNote) async {
+  static Future updateNoteRaw(NoteModel newNote) async {
     Database db = await getDatabase;
     await db.rawUpdate('UPDATE notes SET title = ?, content = ? WHERE id = ?',
         [newNote.title, newNote.content, newNote.id]);
@@ -174,33 +175,6 @@ CREATE TABLE todos (
   }
 }
 
-class Note {
-  final int? id;
-  final String title;
-  final String content;
-  String? description;
-
-  Note({
-    this.id,
-    required this.title,
-    required this.content,
-    this.description,
-  });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'title': title,
-      'content': content,
-      'description': description,
-    };
-  }
-
-  @override
-  String toString() {
-    return 'Note{id:$id , title: $title , content:$content , description:$description}';
-  }
-}
 ///////////////////////////////////////
 ////////////// TOdO CLASS /////////////
 ///////////////////////////////////////
